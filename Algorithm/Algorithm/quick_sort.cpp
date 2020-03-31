@@ -1,7 +1,43 @@
 #include <iostream>
 
-void quick_sort(int a[], int left, int right);
-void exchange(int a[], int i, int j);
+
+
+template<typename T>
+void quick_sort(T* a, int left, int right)
+{
+	if (left >= right)
+		return;
+	int min = left, max = right - 1, privot = right;
+	while (min < max)
+	{
+		while (a[min] <= a[privot] && min < max)
+		{
+			++min;
+		}
+		while (a[max] > a[privot] && min < max)
+		{
+			--max;
+
+		}
+		if (min < max)
+		{
+			T temp = a[min];
+			a[min] = a[max];
+			a[max] = temp;
+		}
+	}
+	if (a[min] > a[privot])
+	{
+		//exchange(a, min, privot);
+		T temp = a[min];
+		a[min] = a[privot];
+		a[privot] = temp;
+		privot = min;
+	}
+	quick_sort(a, left, privot - 1);
+	quick_sort(a, privot + 1, right);
+}
+
 
 int main()
 {
@@ -9,41 +45,4 @@ int main()
 	quick_sort(a, 0, (sizeof(a) / sizeof(a[0])) - 1);
 	return 0;
 
-}
-
-void quick_sort(int a[], int left, int right)
-{
-	if (left >= right)
-		return;
-	int min = left, max = right - 1, privot = right;
-	while (min<max)
-	{
-		while (a[min]<=a[privot]&&min<max)
-		{
-			++min;
-		}
-		while (a[max]>a[privot]&&min<max)
-		{
-			--max;
-
-		}
-		if (min < max)
-		{
-			exchange(a, min, max);
-		}
-	}
-	if (a[min] > a[privot])
-	{
-		exchange(a, min, privot);
-		privot = min;
-	}
-	quick_sort(a,left,privot-1);
-	quick_sort(a,privot+1,right);
-}
-
-void exchange(int a[], int i, int j)
-{
-	int temp = a[i];
-	a[i] = a[j];
-	a[j] = temp;
 }
