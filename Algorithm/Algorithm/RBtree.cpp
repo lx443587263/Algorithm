@@ -261,7 +261,7 @@ PRBNode remove(PRBNode root, unsigned key)
 		{
 			reverse_flip_color(root);
 		}
-		root->right = remove(root->right);
+		root->right = remove(root->right,key);
 	}
 	else
 	{
