@@ -1,48 +1,83 @@
 #include <iostream>
+#include <vector>
+#include <ctime>
+#include <stdlib.h>
+#include <algorithm>
 
 
-
-template<typename T>
-void quick_sort(T* a, int left, int right)
+class A
 {
+public:
+	int _id;
+};
+
+class A_compare
+{
+public:
+	bool operator()(A const& a, A const& b)
+	{
+		return a._id <= b._id;
+	}
+}comp;
+
+template <typename T,typename Compare>
+void quick_sort(std::vector<T>& vec, int left, int right,Compare comp)
+{
+	int min = left, max = right - 1, prviot = right;
+	T temp;
 	if (left >= right)
 		return;
-	int min = left, max = right - 1, privot = right;
-	while (min < max)
+	while (min<max)
 	{
-		while (a[min] <= a[privot] && min < max)
+		while (comp(vec[min],vec[prviot]) && min < max)
 		{
+			/*if (min > max)
+				break;*/
 			++min;
 		}
-		while (a[max] > a[privot] && min < max)
+		while (comp(vec[prviot],vec[max])&&min<max)
 		{
+			//if (min > max)
+			//	break;
 			--max;
-
 		}
-		if (min < max)
+		if (min<max)
 		{
-			T temp = a[min];
-			a[min] = a[max];
-			a[max] = temp;
+			temp = std::move(vec[min]);
+			vec[min] = std::move(vec[max]);
+			vec[max] = std::move(temp);
 		}
 	}
-	if (a[min] > a[privot])
+	if (comp(vec[prviot],vec[min]))
 	{
-		//exchange(a, min, privot);
-		T temp = a[min];
-		a[min] = a[privot];
-		a[privot] = temp;
-		privot = min;
+		temp = std::move(vec[min]);
+		vec[min] = std::move(vec[prviot]);
+		vec[prviot] = std::move(temp);
+		prviot = std::move(min);
 	}
-	quick_sort(a, left, privot - 1);
-	quick_sort(a, privot + 1, right);
+	quick_sort(vec, left, prviot - 1,comp);
+	quick_sort(vec, prviot + 1, right,comp);
+	
 }
 
 
+A gen_fn(void)
+{
+	return { rand() % 100 };
+}
+
 int main()
 {
-	int a[] = { 2,3,1,7,4,5,6,9,8,0 };
-	quick_sort(a, 0, (sizeof(a) / sizeof(a[0])) - 1);
-	return 0;
+	std::vector<A> vec(10);
 
+	srand(static_cast<unsigned>(time(nullptr)));
+
+	std::generate(vec.begin(), vec.end(), gen_fn);
+
+	quick_sort(vec,0,9,comp);
+	for (auto& it : vec)
+	{
+		std::cout << it._id << std::endl;
+	}
+	return 0;
 }
