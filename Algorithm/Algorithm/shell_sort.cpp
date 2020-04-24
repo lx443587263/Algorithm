@@ -1,27 +1,72 @@
+#include <iostream>
+#include <ctime>
+#include <stdlib.h>
+#include <vector>
+#include <algorithm>
 
-template<typename T>
-void shell_sort(T *a, const size_t n)
+class A
 {
-	T i = 0, j = 0, k = 0, temp = 0;
-	for ( k =n/ 2; k >=1; k/=2)
+public:
+	int _id;
+};
+
+class gen_class
+{
+public:
+	A operator ()(void)
 	{
-		for (i = k; i <= n - 1; ++i)
+		return { rand() % 100 };
+	}
+};
+
+A gen(void)
+{
+	return { rand() % 100 };
+}
+
+class A_compare
+{
+public:
+	bool operator ()(A const& a,A const& b)
+	{
+		return a._id < b._id;
+	}
+}comp;
+
+template <typename T,typename compare>
+void shell_sort(std::vector<T>& vec, compare comp)
+{
+	
+	for (int k = vec.size()/2;k>=1;k/=2)
+	{
+		for (int i=k;i<=vec.size()-1;++i)
 		{
-			temp = a[i];
-			for ( j = i-k; j>0&&a[j]>temp; j-=k)
+			auto temp = std::move(vec[i]);
+			int j = i - k;
+			for (;comp(temp,vec[j]);)
 			{
-				a[j + k] = a[j];
+
+				vec[j + k] = std::move(vec[j]);
+				j -= k;
+				if (j < 0)
+					break;
 			}
-			a[j + k] = temp;
+			vec[j + k] = std::move(temp);
 		}
 	}
 }
 
 int main()
 {
-	int a[] = { 2,3,1,7,4,5,6,9,8,0 };
-	shell_sort(a, sizeof(a) / sizeof(a[0]));
+	std::vector<A> vec(10);
+	srand(static_cast<unsigned>(time(nullptr)));
+
+	std::generate(vec.begin(),vec.end(),gen);
+
+	shell_sort(vec, comp);
+	for (auto& it : vec)
+	{
+		std::cout << it._id << std::endl;
+	}
 	return 0;
 }
-
-
